@@ -17,7 +17,7 @@ The goal of this project is to create software as a service (SaaS) subscription-
 - Filter incoming DNS traffic 
 - Not log user data through filter 
 - Ability to select varying levels of traffic filtering
-- Whitelist/blacklist for additional user control
+- Allowlist/Blocklist for additional user control
 
 ## Project Scope
 The goal is a one-click solution (like existing VPN technology), that will route traffic to our servers to cross-reference with our block listing (Avoidthehack!, 2023) before routing the traffic back to the enabled device, eliminating unnecessary traffic in the process. This will hopefully be implemented at an acceptable speed at parity with unfiltered traffic. To differentiate this from the self-hosted open-source implementation, we will be monetized monthly/yearly for a subscription service that can be configured in a wide variety of fashions, with varying models of severity of traffic filtering, such as anti-NSFW filters for family devices.
