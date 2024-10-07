@@ -33,3 +33,9 @@ The goal is a one-click solution (like existing VPN technology), that will route
 - Sqlite3
 - ChatGPT
 - Scapy 
+
+## Collaborators
+- Jason Spears 
+- William Mayer
+- Venkateswaran Naresh
+- Iaan Wheeler
