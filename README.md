@@ -39,3 +39,14 @@ The goal is a one-click solution (like existing VPN technology), that will route
 - William Mayer
 - Venkateswaran Naresh
 - Iaan Wheeler
+
+## Setup and Upkeep
+
+- To correctly setup the dev environment install the neccesary dependencies with the following command 
+pip3 install -r requirements.txt
+
+-If you need a new dependency install it as such
+pip3 install PACKAGE
+
+-When you are done with you're development and you have added a new package, use the following command to update the dependency list
+pip3 freeze> >requirements.txt
