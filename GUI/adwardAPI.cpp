@@ -1,4 +1,4 @@
-// piholeapi.cpp
+// declaration for connecting to the server app
 #include "adwardAPI.h"
 #include <QNetworkRequest>
 #include <QUrl>
@@ -14,7 +14,7 @@ void adwardAPI::fetchSummary(const QString &apiUrl, const QString &apiKey) {
     networkManager->get(request);
 }
 
-void PiHoleAPI::onNetworkReply(QNetworkReply *reply) {
+void adwardAPI::onNetworkReply(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray response = reply->readAll();
         QJsonDocument jsonResponse = QJsonDocument::fromJson(response);

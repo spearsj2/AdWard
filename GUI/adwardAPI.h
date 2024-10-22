@@ -1,5 +1,6 @@
-#ifndef PIHOLEAPI_H
-#define PIHOLEAPI_H
+// header for connecting to the server application
+#ifndef ADWARDAPI_H
+#define ADWARDAPI_H
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -7,10 +8,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-class PiHoleAPI : public QObject {
+class adwardAPI : public QObject {
     Q_OBJECT
 public:
-    explicit PiHoleAPI(QObject *parent = nullptr);
+    explicit adwardAPI(QObject *parent = nullptr);
     void fetchSummary(const QString &apiUrl, const QString &apiKey);
 
 private:
