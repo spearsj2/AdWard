@@ -1,25 +1,39 @@
-#ifndef FRONTPAGE_H
-#define FRONTPAGE_H
-
 #include <QMainWindow>
 #include <QPushButton>
+#include <QDialog>
+#include <QListWidget>
+#include <QLineEdit>
+#include <QVBoxLayout>
 #include <QNetworkAccessManager>
 
-class frontPage : public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    frontPage(QWidget *parent = nullptr);
-    ~frontPage();
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
-    void toggleAdWard();
-    void disableAdWard();
-    void enableAdWard();
+    void showBlocklistModal();
+    void showAllowlistModal();
+    void addToBlocklist();
+    void addToAllowlist();
+    void fetchBlocklist();
+    void fetchAllowlist();
 
 private:
-    QPushButton *toggleButton;
+    QPushButton *blocklistButton;
+    QPushButton *allowlistButton;
     QNetworkAccessManager *networkManager;
+
+    QDialog *blocklistModal;
+    QDialog *allowlistModal;
+
+    QListWidget *blocklistView;
+    QListWidget *allowlistView;
+
+    QLineEdit *blocklistInput;
+    QLineEdit *allowlistInput;
 };
 
-#endif
+#endif // MAINWINDOW_H
