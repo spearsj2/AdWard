@@ -42,11 +42,16 @@ The goal is a one-click solution (like existing VPN technology), that will route
 
 ## Setup and Upkeep
 
+- First you will need to install conan
+  pip3 install conan
+
+- Setup the profile
+  conan profile detect
+  
 - To correctly setup the dev environment install the neccesary dependencies with the following command 
-pip3 install -r requirements.txt
+conan install . --build=missing
 
 -If you need a new dependency install it as such
-pip3 install PACKAGE
+conan install PACKAGE
 
--When you are done with you're development and you have added a new package, use the following command to update the dependency list
-pip3 freeze> >requirements.txt
+## building the app 
