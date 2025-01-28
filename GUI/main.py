@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from front_page import FrontPage
+from frontPage import frontPage
 
 def main():
     app = QApplication(sys.argv)
