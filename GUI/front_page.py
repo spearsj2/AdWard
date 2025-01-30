@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QPushButton, 
                               QDialog, QListWidget, QLineEdit, QMessageBox)
-from PySide6.QtCore import QUrl
-from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PySide6.QtCore import QUrl  # Added this import
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -21,14 +21,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.allowlist_button)
         
         # Connect signals
-        self.blocklist_button.clicSked.connect(self.show_blocklist_modal)
+        self.blocklist_button.clicked.connect(self.show_blocklist_modal)
         self.allowlist_button.clicked.connect(self.show_allowlist_modal)
         
         # Set up the central widget
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
         self.setWindowTitle("Pi-hole Block/Allowlist Manager")
-        
+
     def show_blocklist_modal(self):
         self.blocklist_modal = QDialog(self)
         modal_layout = QVBoxLayout(self.blocklist_modal)
@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.allowlist_modal.setLayout(modal_layout)
         self.allowlist_modal.setWindowTitle("Manage Allowlist")
         self.allowlist_modal.exec()
-        
+
     def add_to_blocklist(self):
         domain = self.blocklist_input.text()
         if not domain:
@@ -92,14 +92,12 @@ class MainWindow(QMainWindow):
     def fetch_blocklist(self):
         url = "http://your-pihole-ip/admin/api.php?list=black&auth=your-api-token"
         request = QNetworkRequest(QUrl(url))
-        
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_blocklist_response(reply))
         
     def fetch_allowlist(self):
         url = "http://your-pihole-ip/admin/api.php?list=white&auth=your-api-token"
         request = QNetworkRequest(QUrl(url))
-        
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_allowlist_response(reply))
         
