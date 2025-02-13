@@ -5,6 +5,7 @@ from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRe
 from PySide6.QtCore import QUrl
 from adward_API import AdwardAPI
 from config import PiholeConfig
+from config_dialog import ConfigDialog
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -19,9 +20,12 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         
         # Status section
+        self.config_button = QPushButton("Configure Server", self)
+        self.config_button.clicked.connect(self.show_config_dialog)
+        layout.addWidget(self.config_button)
         status_layout = QHBoxLayout()
         self.status_label = QLabel("Status: Unknown")
-        self.toggle_button = QPushButton("Toggle Pi-hole")
+        self.toggle_button = QPushButton("Toggle On/Off")
         self.toggle_button.clicked.connect(self.toggle_pihole)
         
         status_layout.addWidget(self.status_label)
@@ -32,7 +36,6 @@ class MainWindow(QMainWindow):
         self.blocklist_button = QPushButton("Manage Blocklist", self)
         self.allowlist_button = QPushButton("Manage Allowlist", self)
         
-        # Add buttons to layout
         layout.addWidget(self.blocklist_button)
         layout.addWidget(self.allowlist_button)
         
@@ -45,8 +48,25 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         self.setWindowTitle("Pi-hole Block/Allowlist Manager")
         
-        # Initial status fetch
+
+        self.check_configuration()
+
+    def check_configuration(self):
+        """Check if server is configured and update UI accordingly"""
+        is_configured = self.config.is_configured()
+        self.toggle_button.setEnabled(is_configured)
+        self.blocklist_button.setEnabled(is_configured)
+        self.allowlist_button.setEnabled(is_configured)
+    
+    if is_configured:
         self.fetch_status()
+    else:
+        self.status_label.setText("Status: Not Configured")
+        self.status_label.setStyleSheet("color: orange; font-weight: bold;")
+    def show_config_dialog(self):
+        dialog = ConfigDialog(self.config, self)
+        if dialog.exec() == QDialog.Accepted:
+            self.check_configuration()
 
     def show_blocklist_modal(self):
         self.blocklist_modal = QDialog(self)
