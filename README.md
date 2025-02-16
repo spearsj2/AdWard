@@ -55,3 +55,19 @@ conan install . --build=missing
 conan install PACKAGE
 
 ## building the app 
+ 
+Please note this is for the GUI in vscode/vscodium if other adapt instructions
+
+Install the neccesary extensions 
+- Python
+- Python debugger
+
+Install the requirements.txt with the following command 
+```
+pipx install > requirements.txt
+```
+If the above command does not work, lookup how to create an isolated python environment on your individual system.
+
+Go to sidebar and there should be the 'Run & Debug' section and click the start button. The dropdown should read "Adward Qt App, if not, select that and then run.
+
+his should result in a new window for the app if it does not work while in the 'main' branch, contact maintainer.
