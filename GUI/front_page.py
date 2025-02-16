@@ -53,16 +53,16 @@ class MainWindow(QMainWindow):
 
     def check_configuration(self):
         """Check if server is configured and update UI accordingly"""
-        is_configured = self.config.is_configured()
+        is_configured = self.config.is_configured()  # Use self.config to access the method
         self.toggle_button.setEnabled(is_configured)
         self.blocklist_button.setEnabled(is_configured)
         self.allowlist_button.setEnabled(is_configured)
-    
-    if is_configured:
-        self.fetch_status()
-    else:
-        self.status_label.setText("Status: Not Configured")
-        self.status_label.setStyleSheet("color: orange; font-weight: bold;")
+        if is_configured:
+            self.fetch_status()
+        else:
+            self.status_label.setText("Status: Not Configured")
+            self.status_label.setStyleSheet("color: orange; font-weight: bold;")
+
     def show_config_dialog(self):
         dialog = ConfigDialog(self.config, self)
         if dialog.exec() == QDialog.Accepted:
