@@ -14,9 +14,9 @@ def setup_logging(config_file):
             logging.FileHandler(log_file),
             logging.StreamHandler()
         ])
-        return print("Logging enabled . . .\n")
+        return print("Logging enabled.\n")
     else:
-        return print("Logging disabled . . .\n")
+        return print("Logging disabled.\n")
 
 def get_config_value(config_file, variable_name):
     with open(config_file, 'r') as f:

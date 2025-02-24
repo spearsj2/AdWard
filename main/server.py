@@ -14,7 +14,7 @@ from logging_config import setup_logging, get_config_value
 config_file = os.path.join(os.path.dirname(__file__), '../etc/adward.conf')
 
 # List of blocked domains
-blocked_domains = ["xavier.edu"] # example domain to block
+blocked_domains = set()
 
 # Function to load blocked domains from files in block_lists folder
 def load_blocked_domains(directory):
@@ -29,15 +29,36 @@ def load_blocked_domains(directory):
                     if line.startswith('0.0.0.0'): # Matching formatting in the file
                         domain = line.split()[1].strip()
                         blocked.add(domain)
-    print(f"Loaded {len(blocked)} blocked domains from {directory}")
+    print(f"Loaded {len(blocked)} to be blocked.")
     return blocked
+
+# Function to load allowed domains from allow list file and remove them from blocked domains
+def remove_allowed_domains(blocked_domains, allow_list_file):
+    if not os.path.isfile(allow_list_file):
+        raise FileNotFoundError(f"The allow list file {allow_list_file} does not exist.")
+    allowed_count = 0
+    with open(allow_list_file, 'r') as file:
+        for line in file:
+            if line.startswith('0.0.0.0'): # Matching formatting in the file
+                domain = line.split()[1].strip()
+                if domain in blocked_domains:
+                    blocked_domains.remove(domain)
+                allowed_count += 1
+    print(f"Removed {allowed_count} allowed domains from blocked domains")
 
 # Load additional blocked domains from block lists
 block_lists_directory = get_config_value(config_file, 'blockListDir')
 if block_lists_directory is None:
     raise ValueError("Configuration value for 'blockListDir' is missing or invalid.")
 block_lists_directory = os.path.join(os.path.dirname(__file__), block_lists_directory)
-blocked_domains.extend(load_blocked_domains(block_lists_directory))
+blocked_domains.update(load_blocked_domains(block_lists_directory))
+
+# Load allowed domains from allow list file
+allow_list_file = get_config_value(config_file, 'allowListFile')
+if allow_list_file is None:
+    raise ValueError("Configuration value for 'allowListFile' is missing or invalid.")
+allow_list_file = os.path.join(os.path.dirname(__file__), allow_list_file)
+remove_allowed_domains(blocked_domains, allow_list_file)
 
 # CSV logging setup
 csv_log_file = get_config_value(config_file, 'logFile')
@@ -114,13 +135,15 @@ class DNSServer:
                 log_to_csv('Forwarded', domain)
         except socket.error as e:
             if e.errno == 10054:
-                logging.debug("Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host :)")
+                logging.debug("Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host.")
+            if e.errno == 10048:
+                logging.error("Socket error: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted. Please close the existing server instance.")
             else:
                 logging.error(f"Socket error: {e}")
 
     def start(self):
         print(f"Starting DNS server on {self.host}:{self.port}")
-        print(f"Forwarding DNS requests to {self.forwarder}")
+        print(f"Forwarding DNS requests to {self.forwarder}\n")
         while self.running:
             try:
                 data, addr = self.server.recvfrom(512)
@@ -129,7 +152,7 @@ class DNSServer:
                 if not self.running:
                     break
                 if e.errno == 10054:
-                    logging.debug("Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host :)")
+                    logging.debug("Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host.")
                 else:
                     logging.error(f"Socket error: {e}")
 
