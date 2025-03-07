@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, 
-                              QLabel, QLineEdit, QPushButton, QMessageBox)
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout,
+                             QLabel, QLineEdit, QPushButton, QMessageBox)
 
 class ConfigDialog(QDialog):
     def __init__(self, config, parent=None):
