@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QPushButton,
                               QHBoxLayout, QLabel, QListWidgetItem)
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PySide6.QtCore import QUrl, Qt
+from PySide6.QtGui import QPixmap, QIcon
 import json
 from adward_API import AdwardAPI
 from config import PiholeConfig
@@ -29,12 +30,30 @@ class MainWindow(QMainWindow):
         """Set up the user interface"""
         # Create central widget and layout
         central_widget = QWidget(self)
-        layout = QVBoxLayout()
+        main_layout = QVBoxLayout()
+
+        # Add logo at the top
+        logo_layout = QHBoxLayout()
+        logo_label = QLabel()
+
+        pixmap = QPixmap("GUI/transparent_Adward")
+        
+        # Scale the image if needed (adjust size as appropriate)
+        scaled_pixmap = pixmap.scaled(80, 80, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
+        # Set the pixmap to the label
+        logo_label.setPixmap(scaled_pixmap)
+        
+        # Add the logo to the layout with alignment
+        logo_layout.addWidget(logo_label, 0, Qt.AlignLeft | Qt.AlignTop)
+        logo_layout.addStretch(1)  # Push everything else to the right
+    
+        main_layout.addLayout(logo_layout)
         
         # Status section
         self.config_button = QPushButton("Configure Server", self)
         self.config_button.clicked.connect(self.show_config_dialog)
-        layout.addWidget(self.config_button)
+        main_layout.addWidget(self.config_button)
         
         status_layout = QHBoxLayout()
         self.status_label = QLabel("Status: Unknown")
@@ -45,24 +64,29 @@ class MainWindow(QMainWindow):
         
         status_layout.addWidget(self.status_label)
         status_layout.addWidget(self.toggle_button)
-        layout.addLayout(status_layout)
+        main_layout.addLayout(status_layout)
         
         # Create list management buttons
         self.blocklist_button = QPushButton("Manage Blocklist", self)
         self.allowlist_button = QPushButton("Manage Allowlist", self)
         
-        layout.addWidget(self.blocklist_button)
-        layout.addWidget(self.allowlist_button)
+        main_layout.addWidget(self.blocklist_button)
+        main_layout.addWidget(self.allowlist_button)
         
         # Connect signals
         self.blocklist_button.clicked.connect(self.show_blocklist_modal)
         self.allowlist_button.clicked.connect(self.show_allowlist_modal)
         
         # Set up the central widget
-        central_widget.setLayout(layout)
+        central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
         self.setWindowTitle("Pi-hole Block/Allowlist Manager")
         self.resize(400, 300)
+
+        central_widget.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
+        
+        self.setWindowIcon(QIcon("GUI/transparent_Adward.png"))
 
     def check_configuration(self):
         """Check if server is configured and update UI accordingly"""
