@@ -15,74 +15,149 @@ class StyledButton(QPushButton):
         super().__init__(text, parent)
         self.setMinimumHeight(36)
         self.setCursor(Qt.PointingHandCursor)
+        self.primary = primary
+        self.apply_style(False)  # Default to light theme
         
-        if primary:
+    def apply_style(self, dark_mode):
+        """Apply appropriate style based on theme"""
+        if self.primary:
+            if dark_mode:
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: #0d6efd;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                        font-weight: bold;
+                    }
+                    QPushButton:hover {
+                        background-color: #0b5ed7;
+                    }
+                    QPushButton:pressed {
+                        background-color: #0a58ca;
+                    }
+                    QPushButton:disabled {
+                        background-color: #6c757d;
+                        color: #e9ecef;
+                    }
+                """)
+            else:
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: #2c3e50;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                        font-weight: bold;
+                    }
+                    QPushButton:hover {
+                        background-color: #34495e;
+                    }
+                    QPushButton:pressed {
+                        background-color: #1a252f;
+                    }
+                    QPushButton:disabled {
+                        background-color: #7f8c8d;
+                        color: #ecf0f1;
+                    }
+                """)
+        else:
+            if dark_mode:
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: #343a40;
+                        color: #e0e0e0;
+                        border: 1px solid #495057;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                    }
+                    QPushButton:hover {
+                        background-color: #495057;
+                    }
+                    QPushButton:pressed {
+                        background-color: #212529;
+                    }
+                    QPushButton:disabled {
+                        background-color: #343a40;
+                        color: #6c757d;
+                        border: 1px solid #343a40;
+                    }
+                """)
+            else:
+                self.setStyleSheet("""
+                    QPushButton {
+                        background-color: #ecf0f1;
+                        color: #2c3e50;
+                        border: 1px solid #bdc3c7;
+                        border-radius: 4px;
+                        padding: 8px 16px;
+                    }
+                    QPushButton:hover {
+                        background-color: #bdc3c7;
+                    }
+                    QPushButton:pressed {
+                        background-color: #95a5a6;
+                    }
+                    QPushButton:disabled {
+                        background-color: #ecf0f1;
+                        color: #bdc3c7;
+                        border: 1px solid #ecf0f1;
+                    }
+                """)
+
+class StyledListWidget(QListWidget):
+    """Custom styled list widget"""
+    def __init__(self, parent=None, dark_mode=False):
+        super().__init__(parent)
+        self.apply_style(dark_mode)
+        
+    def apply_style(self, dark_mode):
+        """Apply theme-appropriate style"""
+        if dark_mode:
             self.setStyleSheet("""
-                QPushButton {
-                    background-color: #2c3e50;
-                    color: white;
-                    border: none;
+                QListWidget {
+                    background-color: #2d2d2d;
+                    border: 1px solid #444444;
                     border-radius: 4px;
-                    padding: 8px 16px;
-                    font-weight: bold;
+                    padding: 2px;
+                    outline: none;
+                    color: #e0e0e0;
                 }
-                QPushButton:hover {
-                    background-color: #34495e;
+                QListWidget::item {
+                    padding: 6px;
+                    border-bottom: 1px solid #3d3d3d;
                 }
-                QPushButton:pressed {
-                    background-color: #1a252f;
+                QListWidget::item:selected {
+                    background-color: #0d6efd;
+                    color: white;
                 }
-                QPushButton:disabled {
-                    background-color: #7f8c8d;
-                    color: #ecf0f1;
+                QListWidget::item:hover:!selected {
+                    background-color: #3d3d3d;
                 }
             """)
         else:
             self.setStyleSheet("""
-                QPushButton {
-                    background-color: #ecf0f1;
-                    color: #2c3e50;
-                    border: 1px solid #bdc3c7;
+                QListWidget {
+                    background-color: #f5f5f5;
+                    border: 1px solid #dcdcdc;
                     border-radius: 4px;
-                    padding: 8px 16px;
+                    padding: 2px;
+                    outline: none;
                 }
-                QPushButton:hover {
-                    background-color: #bdc3c7;
+                QListWidget::item {
+                    padding: 6px;
+                    border-bottom: 1px solid #eeeeee;
                 }
-                QPushButton:pressed {
-                    background-color: #95a5a6;
+                QListWidget::item:selected {
+                    background-color: #3498db;
+                    color: white;
                 }
-                QPushButton:disabled {
-                    background-color: #ecf0f1;
-                    color: #bdc3c7;
-                    border: 1px solid #ecf0f1;
+                QListWidget::item:hover:!selected {
+                    background-color: #e5e5e5;
                 }
             """)
-
-class StyledListWidget(QListWidget):
-    """Custom styled list widget"""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setStyleSheet("""
-            QListWidget {
-                background-color: #f5f5f5;
-                border: 1px solid #dcdcdc;
-                border-radius: 4px;
-                padding: 2px;
-                outline: none;
-            }
-            QListWidget::item {
-                padding: 6px;
-                border-bottom: 1px solid #eeeeee;
-            }
-            QListWidget::item:selected {
-                background-color: #3498db;
-                color: white;
-            }
-            QListWidget::item:hover:!selected {
-                background-color: #e5e5e5;
-            }
-        """)
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -90,7 +165,7 @@ class MainWindow(QMainWindow):
         self.config = PiholeConfig()
         self.network_manager = QNetworkAccessManager(self)
         self.api = AdwardAPI()
-        
+        self.dark_mode = False  
         # Set application font
         self.setup_fonts()
         
@@ -124,6 +199,8 @@ class MainWindow(QMainWindow):
         
         # Check initial configuration
         self.check_configuration()
+        
+        self.apply_theme()
 
     def setup_fonts(self):
         """Set up application fonts"""
@@ -187,6 +264,11 @@ class MainWindow(QMainWindow):
         """)
         status_layout = QVBoxLayout(status_card)
         
+        # Add this near the other buttons in logo_layout
+        self.theme_button = StyledButton("🌙 Dark Mode", primary=False)
+        self.theme_button.clicked.connect(self.toggle_theme)
+        logo_layout.addWidget(self.theme_button)
+
         # Config button at the top of the status card
         self.config_button = StyledButton("⚙️ Configure Server", status_card)
         self.config_button.clicked.connect(self.show_config_dialog)
@@ -283,16 +365,28 @@ class MainWindow(QMainWindow):
         self.blocklist_modal = QDialog(self)
         self.blocklist_modal.setWindowTitle("Manage Blocklist")
         self.blocklist_modal.resize(450, 550)
-        self.blocklist_modal.setStyleSheet("""
-            QDialog {
-                background-color: white;
-            }
-            QLabel {
-                color: #2c3e50;
-                font-weight: bold;
-                margin-bottom: 4px;
-            }
-        """)
+        if self.dark_mode:
+            self.blocklist_modal.setStyleSheet("""
+                QDialog {
+                    background-color: #1e1e1e;
+                }
+                QLabel {
+                    color: #e0e0e0;
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+            """)
+        else:
+            self.blocklist_modal.setStyleSheet("""
+                QDialog {
+                    background-color: white;
+                }
+                QLabel {
+                    color: #2c3e50;
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+            """)
         
         modal_layout = QVBoxLayout(self.blocklist_modal)
         modal_layout.setContentsMargins(20, 20, 20, 20)
@@ -321,7 +415,7 @@ class MainWindow(QMainWindow):
         modal_layout.addWidget(instructions)
         
         # List display
-        self.blocklist_view = StyledListWidget(self.blocklist_modal)
+        self.blocklist_view = StyledListWidget(self.blocklist_modal, self.dark_mode)
         self.blocklist_view.setSelectionMode(QListWidget.ExtendedSelection)
         self.blocklist_view.setAlternatingRowColors(True)
         modal_layout.addWidget(self.blocklist_view)
@@ -355,16 +449,28 @@ class MainWindow(QMainWindow):
         self.allowlist_modal = QDialog(self)
         self.allowlist_modal.setWindowTitle("Manage Allowlist")
         self.allowlist_modal.resize(450, 550)
-        self.allowlist_modal.setStyleSheet("""
-            QDialog {
-                background-color: white;
-            }
-            QLabel {
-                color: #2c3e50;
-                font-weight: bold;
-                margin-bottom: 4px;
-            }
-        """)
+        if self.dark_mode:
+            self.blocklist_modal.setStyleSheet("""
+                QDialog {
+                    background-color: #1e1e1e;
+                }
+                QLabel {
+                    color: #e0e0e0;
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+            """)
+        else:
+            self.blocklist_modal.setStyleSheet("""
+                QDialog {
+                    background-color: white;
+                }
+                QLabel {
+                    color: #2c3e50;
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+            """)
         
         modal_layout = QVBoxLayout(self.allowlist_modal)
         modal_layout.setContentsMargins(20, 20, 20, 20)
@@ -393,7 +499,7 @@ class MainWindow(QMainWindow):
         modal_layout.addWidget(instructions)
         
         # List display
-        self.allowlist_view = StyledListWidget(self.allowlist_modal)
+        self.allowlist_view = StyledListWidget(self.allowlist_modal, self.dark_mode)
         self.allowlist_view.setSelectionMode(QListWidget.ExtendedSelection)
         self.allowlist_view.setAlternatingRowColors(True)
         modal_layout.addWidget(self.allowlist_view)
@@ -423,7 +529,85 @@ class MainWindow(QMainWindow):
         
         self.allowlist_modal.exec()
 
-    # The rest of your methods remain unchanged
+
+    def toggle_theme(self):
+        """Toggle between light and dark mode"""
+        self.dark_mode = not self.dark_mode
+        self.theme_button.setText("☀️ Light Mode" if self.dark_mode else "🌙 Dark Mode")
+        self.apply_theme()
+
+    def apply_theme(self):
+        """Apply the current theme to all UI elements"""
+        if self.dark_mode:
+            # Dark theme
+            self.setStyleSheet("""
+                QMainWindow {
+                    background-color: #1e1e1e;
+                }
+                QLabel {
+                    color: #e0e0e0;
+                }
+                QLineEdit {
+                    padding: 8px;
+                    border: 1px solid #555555;
+                    border-radius: 4px;
+                    background-color: #333333;
+                    color: #e0e0e0;
+                    selection-background-color: #3498db;
+                }
+                QLineEdit:focus {
+                    border: 1px solid #3498db;
+                    background-color: #404040;
+                }
+            """)
+
+            # Update card styles
+            for card in self.findChildren(QFrame):
+                if card.frameShape() == QFrame.StyledPanel:
+                    card.setStyleSheet("""
+                        QFrame {
+                            background-color: #2d2d2d;
+                            border-radius: 8px;
+                            border: 1px solid #444444;
+                        }
+                    """)
+        else:
+            # Light theme (original style)
+            self.setStyleSheet("""
+                QMainWindow {
+                    background-color: white;
+                }
+                QLabel {
+                    color: #2c3e50;
+                }
+                QLineEdit {
+                    padding: 8px;
+                    border: 1px solid #bdc3c7;
+                    border-radius: 4px;
+                    background-color: #ecf0f1;
+                    selection-background-color: #3498db;
+                }
+                QLineEdit:focus {
+                    border: 1px solid #3498db;
+                    background-color: white;
+                }
+            """)
+
+            # Reset card styles
+            for card in self.findChildren(QFrame):
+                if card.frameShape() == QFrame.StyledPanel:
+                    card.setStyleSheet("""
+                        QFrame {
+                            background-color: #f8f9fa;
+                            border-radius: 8px;
+                            border: 1px solid #e9ecef;
+                        }
+                    """)
+    def update_button_styles(self):
+        """Update all buttons with the current theme"""
+        for button in self.findChildren(StyledButton):
+            button.apply_style(self.dark_mode)
+
     def add_to_blocklist(self):
         domain = self.blocklist_input.text().strip()
         if not domain:
@@ -495,15 +679,25 @@ class MainWindow(QMainWindow):
         """Update the UI based on Pi-hole status"""
         status_text = "Enabled" if enabled else "Disabled"
         self.status_label.setText(f"Status: {status_text}")
+    
+    # Use theme-appropriate colors
+        if self.dark_mode:
+            enabled_color = "#4bb543"  # Darker green for dark mode
+            disabled_color = "#ff3333"  # Darker red for dark mode
+        else:
+            enabled_color = "#27ae60"  # Original green
+            disabled_color = "#e74c3c"  # Original red
+        
         self.status_label.setStyleSheet(
-            f"color: {'#27ae60' if enabled else '#e74c3c'}; font-weight: bold;"
+            f"color: {enabled_color if enabled else disabled_color}; font-weight: bold;"
         )
-        # Update toggle button text
+        
         self.toggle_button.setText("Disable" if enabled else "Enable")
         
     def toggle_pihole(self):
         """Toggle Pi-hole enabled/disabled status"""
         current_status = self.status_label.text() == "Status: Enabled"
+    
         self.api.toggle_status(not current_status, self.config.get_api_url(), self.config.token)
     
     def show_error(self, error_message):
