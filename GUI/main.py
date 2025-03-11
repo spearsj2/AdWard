@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from front_page import MainWindow  # Changed to match the class name
+from front_page import MainWindow
 
 def main():
     app = QApplication(sys.argv)
