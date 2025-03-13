@@ -1,8 +1,8 @@
 from PySide6.QtCore import QSettings
 
-class PiholeConfig:
+class AdwardConfig:
     def __init__(self):
-        self.settings = QSettings('PiholeManager', 'Config')
+        self.settings = QSettings('AdWardManager', 'Config')
         self.ip = self.settings.value('ip', '')
         self.token = self.settings.value('token', '')
         
