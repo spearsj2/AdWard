@@ -6,7 +6,7 @@ from PySide6.QtCore import QUrl, Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon, QFont, QColor, QPalette, QFontDatabase
 import json
 from adward_API import AdwardAPI
-from config import PiholeConfig
+from config import AdwardConfig
 from config_dialog import ConfigDialog
 
 class StyledButton(QPushButton):
@@ -162,7 +162,7 @@ class StyledListWidget(QListWidget):
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.config = PiholeConfig()
+        self.config = AdwardConfig()
         self.network_manager = QNetworkAccessManager(self)
         self.api = AdwardAPI()
         self.dark_mode = False  
@@ -284,7 +284,7 @@ class MainWindow(QMainWindow):
         self.status_label.setFont(status_font)
         
         self.toggle_button = StyledButton("Toggle On/Off", status_card, primary=True)
-        self.toggle_button.clicked.connect(self.toggle_pihole)
+        self.toggle_button.clicked.connect(self.toggle_adward)
         self.toggle_button.setMinimumWidth(120)
         
         status_row.addWidget(self.status_label)
@@ -336,7 +336,7 @@ class MainWindow(QMainWindow):
         # Set up the central widget
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-        self.setWindowTitle("Pi-hole Block/Allowlist Manager")
+        self.setWindowTitle("AdWard Block/Allowlist Manager")
         self.resize(500, 400)
         
         self.setWindowIcon(QIcon("GUI/transparent_Adward.png"))
@@ -398,7 +398,7 @@ class MainWindow(QMainWindow):
         header_icon.setText("🛑")
         header_icon.setFont(QFont(self.font().family(), 18))
         
-        header_text = QLabel("Pi-hole Blocklist")
+        header_text = QLabel("AdWard Blocklist")
         header_font = QFont(self.font())
         header_font.setPointSize(16)
         header_font.setBold(True)
@@ -482,7 +482,7 @@ class MainWindow(QMainWindow):
         header_icon.setText("✓")
         header_icon.setFont(QFont(self.font().family(), 18))
         
-        header_text = QLabel("Pi-hole Allowlist")
+        header_text = QLabel("AdWard Allowlist")
         header_font = QFont(self.font())
         header_font.setPointSize(16)
         header_font.setBold(True)
@@ -671,12 +671,12 @@ class MainWindow(QMainWindow):
         reply.finished.connect(lambda: self._handle_list_response(reply, self.allowlist_view))
 
     def fetch_status(self):
-        """Fetch the Pi-hole status"""
+        """Fetch the AdWard status"""
         if self.config.is_configured():
             self.api.fetch_status(self.config.get_api_url(), self.config.token)
             
     def update_status_display(self, enabled: bool):
-        """Update the UI based on Pi-hole status"""
+        """Update the UI based on AdWard status"""
         status_text = "Enabled" if enabled else "Disabled"
         self.status_label.setText(f"Status: {status_text}")
     
@@ -694,8 +694,8 @@ class MainWindow(QMainWindow):
         
         self.toggle_button.setText("Disable" if enabled else "Enable")
         
-    def toggle_pihole(self):
-        """Toggle Pi-hole enabled/disabled status"""
+    def toggle_adward(self):
+        """Toggle AdWard enabled/disabled status"""
         current_status = self.status_label.text() == "Status: Enabled"
     
         self.api.toggle_status(not current_status, self.config.get_api_url(), self.config.token)
