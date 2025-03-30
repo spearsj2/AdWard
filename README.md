@@ -42,17 +42,24 @@ The goal is a one-click solution (like existing VPN technology), that will route
 
 ## Setup and Upkeep
 
-- First you will need to install conan
-  pip3 install conan
+start a virtual environment to manage the dependencies with 
+```
+python -m venv venv
+```
+The activate the environment based on your system
+Mac/Linux
+```
+source venv/bin/activate
+```
+Windows 
+```
+venv\Scripts\activate
+```
+Install the requirements.txt with the following command 
+```
+pip install -r requirements.txt
+```
 
-- Setup the profile
-  conan profile detect
-  
-- To correctly setup the dev environment install the neccesary dependencies with the following command 
-conan install . --build=missing
-
--If you need a new dependency install it as such
-conan install PACKAGE
 
 ## building the app 
  
@@ -61,12 +68,6 @@ Please note this is for the GUI in vscode/vscodium if other adapt instructions
 Install the neccesary extensions 
 - Python
 - Python debugger
-
-Install the requirements.txt with the following command 
-```
-pipx install > requirements.txt
-```
-If the above command does not work, lookup how to create an isolated python environment on your individual system.
 
 Go to sidebar and there should be the 'Run & Debug' section and click the start button. The dropdown should read "Adward Qt App, if not, select that and then run.
 
