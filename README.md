@@ -61,7 +61,7 @@ pip install -r requirements.txt
 ```
 
 
-## building the app 
+## debugging/building the app 
  
 Please note this is for the GUI in vscode/vscodium if other adapt instructions
 
@@ -72,3 +72,15 @@ Install the neccesary extensions
 Go to sidebar and there should be the 'Run & Debug' section and click the start button. The dropdown should read "Adward Qt App, if not, select that and then run.
 
 his should result in a new window for the app if it does not work while in the 'main' branch, contact maintainer.
+
+Now for building the app then we will have to do a bit more.
+```
+cd GUI
+```
+
+Then run this command to complete the build, this will take a while.
+
+```
+pyinstaller AdWardGUI.spec
+```
+
