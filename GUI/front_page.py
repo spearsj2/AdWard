@@ -1,10 +1,8 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QPushButton, 
                               QDialog, QListWidget, QLineEdit, QMessageBox,
                               QHBoxLayout, QLabel, QListWidgetItem, QFrame)
-from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
-from PySide6.QtCore import QUrl, Qt, QSize
-from PySide6.QtGui import QPixmap, QIcon, QFont, QColor, QPalette, QFontDatabase
-import json
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QPixmap, QIcon, QFont
 from adward_API import AdwardAPI
 from config import AdwardConfig
 from config_dialog import ConfigDialog
@@ -19,7 +17,6 @@ class StyledButton(QPushButton):
         self.apply_style(False)  # Default to light theme
         
     def apply_style(self, dark_mode):
-        """Apply appropriate style based on theme"""
         if self.primary:
             if dark_mode:
                 self.setStyleSheet("""
@@ -163,17 +160,13 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.config = AdwardConfig()
-        self.network_manager = QNetworkAccessManager(self)
         self.api = AdwardAPI()
         self.dark_mode = False  
-        # Set application font
         self.setup_fonts()
         
-        # Connect API signals
         self.api.status_updated.connect(self.update_status_display)
         self.api.error_occurred.connect(self.show_error)
         
-        # Set application style
         self.setStyleSheet("""
             QMainWindow {
                 background-color: white;
@@ -203,56 +196,46 @@ class MainWindow(QMainWindow):
         self.apply_theme()
 
     def setup_fonts(self):
-        """Set up application fonts"""
-        # You could load custom fonts here if needed
-        # For system fonts, we can specify preferred fonts
         app_font = self.font()
-        app_font.setFamily("Segoe UI")  # You can change to any system font
+        app_font.setFamily("Segoe UI") 
         app_font.setPointSize(10)
         self.setFont(app_font)
 
     def setup_ui(self):
         """Set up the user interface"""
-        # Create central widget and layout
         central_widget = QWidget(self)
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(16)
 
-        # Add logo at the top
         logo_layout = QHBoxLayout()
         logo_label = QLabel()
 
         pixmap = QPixmap("GUI/transparent_Adward")
         
-        # Scale the image if needed (adjust size as appropriate)
         scaled_pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         
         # Set the pixmap to the label
         logo_label.setPixmap(scaled_pixmap)
         
-        # Title next to logo
-        title_label = QLabel("Current Configuration")
+        title_label = QLabel("Expo Build")
         title_font = QFont(self.font())
         title_font.setPointSize(18)
         title_font.setBold(True)
         title_label.setFont(title_font)
         
-        # Add the logo and title to the layout
         logo_layout.addWidget(logo_label, 0, Qt.AlignLeft | Qt.AlignVCenter)
         logo_layout.addWidget(title_label, 0, Qt.AlignLeft | Qt.AlignVCenter)
-        logo_layout.addStretch(1)  # Push everything else to the right
+        logo_layout.addStretch(1)
     
         main_layout.addLayout(logo_layout)
         
-        # Add separator line
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
         separator.setStyleSheet("background-color: #e0e0e0;")
         main_layout.addWidget(separator)
         
-        # Status section with card-like container
         status_card = QFrame()
         status_card.setFrameShape(QFrame.StyledPanel)
         status_card.setStyleSheet("""
@@ -264,17 +247,14 @@ class MainWindow(QMainWindow):
         """)
         status_layout = QVBoxLayout(status_card)
         
-        # Add this near the other buttons in logo_layout
         self.theme_button = StyledButton("🌙 Dark Mode", primary=False)
         self.theme_button.clicked.connect(self.toggle_theme)
         logo_layout.addWidget(self.theme_button)
 
-        # Config button at the top of the status card
         self.config_button = StyledButton("⚙️ Configure Server", status_card)
         self.config_button.clicked.connect(self.show_config_dialog)
         status_layout.addWidget(self.config_button)
         
-        # Status display with toggle
         status_row = QHBoxLayout()
         
         self.status_label = QLabel("Status: Unknown")
@@ -294,7 +274,6 @@ class MainWindow(QMainWindow):
         status_layout.addLayout(status_row)
         main_layout.addWidget(status_card)
         
-        # Create list management section
         lists_card = QFrame()
         lists_card.setFrameShape(QFrame.StyledPanel)
         lists_card.setStyleSheet("""
@@ -314,7 +293,6 @@ class MainWindow(QMainWindow):
         list_title.setFont(list_title_font)
         lists_layout.addWidget(list_title)
         
-        # Buttons in horizontal layout
         buttons_layout = QHBoxLayout()
         
         self.blocklist_button = StyledButton("🛑 Manage Blocklist", lists_card, primary=True)
@@ -329,7 +307,6 @@ class MainWindow(QMainWindow):
         # Add a stretcher to push everything up
         main_layout.addStretch(1)
         
-        # Connect signals
         self.blocklist_button.clicked.connect(self.show_blocklist_modal)
         self.allowlist_button.clicked.connect(self.show_allowlist_modal)
         
@@ -349,8 +326,6 @@ class MainWindow(QMainWindow):
         self.allowlist_button.setEnabled(is_configured)
         
         if is_configured:
-            # Setup API with stored URL
-            self.api.set_url(self.config.get_api_url())
             self.fetch_status()
         else:
             self.status_label.setText("Status: Not Configured")
@@ -392,7 +367,6 @@ class MainWindow(QMainWindow):
         modal_layout.setContentsMargins(20, 20, 20, 20)
         modal_layout.setSpacing(12)
         
-        # Header with icon
         header_layout = QHBoxLayout()
         header_icon = QLabel()
         header_icon.setText("🛑")
@@ -432,15 +406,12 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(add_button)
         modal_layout.addLayout(input_layout)
         
-        # Remove button
         remove_button = StyledButton("Remove Selected", self.blocklist_modal)
         modal_layout.addWidget(remove_button)
         
-        # Connect actions
         add_button.clicked.connect(self.add_to_blocklist)
         remove_button.clicked.connect(self.remove_from_blocklist)
-        
-        # Fetch existing entries
+
         self.fetch_blocklist()
         
         self.blocklist_modal.exec()
@@ -476,7 +447,6 @@ class MainWindow(QMainWindow):
         modal_layout.setContentsMargins(20, 20, 20, 20)
         modal_layout.setSpacing(12)
         
-        # Header with icon
         header_layout = QHBoxLayout()
         header_icon = QLabel()
         header_icon.setText("✓")
@@ -561,7 +531,6 @@ class MainWindow(QMainWindow):
                 }
             """)
 
-            # Update card styles
             for card in self.findChildren(QFrame):
                 if card.frameShape() == QFrame.StyledPanel:
                     card.setStyleSheet("""
@@ -614,10 +583,33 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Domain cannot be empty.")
             return
             
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&add={domain}")
-        request = QNetworkRequest(url)
-        reply = self.network_manager.get(request)
-        reply.finished.connect(lambda: self._handle_add_response(reply, self.blocklist_view, domain))
+        if self.api.add_to_blocklist(domain):
+            self.blocklist_input.clear()
+            item = QListWidgetItem(domain)
+            self.blocklist_view.addItem(item)
+            
+            success_dialog = QMessageBox(self)
+            success_dialog.setWindowTitle("Success")
+            success_dialog.setText(f"Domain '{domain}' added successfully.")
+            success_dialog.setIcon(QMessageBox.Information)
+            success_dialog.setStandardButtons(QMessageBox.Ok)
+            success_dialog.setStyleSheet("""
+                QMessageBox {
+                    background-color: white;
+                }
+                QPushButton {
+                    background-color: #2ecc71;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    min-width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #27ae60;
+                }
+            """)
+            success_dialog.exec()
         
     def add_to_allowlist(self):
         domain = self.allowlist_input.text().strip()
@@ -625,10 +617,33 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Domain cannot be empty.")
             return
             
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&add={domain}")
-        request = QNetworkRequest(url)
-        reply = self.network_manager.get(request)
-        reply.finished.connect(lambda: self._handle_add_response(reply, self.allowlist_view, domain))
+        if self.api.add_to_allowlist(domain):
+            self.allowlist_input.clear()
+            item = QListWidgetItem(domain)
+            self.allowlist_view.addItem(item)
+            
+            success_dialog = QMessageBox(self)
+            success_dialog.setWindowTitle("Success")
+            success_dialog.setText(f"Domain '{domain}' added to allowlist successfully.")
+            success_dialog.setIcon(QMessageBox.Information)
+            success_dialog.setStandardButtons(QMessageBox.Ok)
+            success_dialog.setStyleSheet("""
+                QMessageBox {
+                    background-color: white;
+                }
+                QPushButton {
+                    background-color: #2ecc71;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    min-width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #27ae60;
+                }
+            """)
+            success_dialog.exec()
     
     def remove_from_blocklist(self):
         selected_items = self.blocklist_view.selectedItems()
@@ -638,10 +653,9 @@ class MainWindow(QMainWindow):
             
         for item in selected_items:
             domain = item.text()
-            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&sub={domain}")
-            request = QNetworkRequest(url)
-            reply = self.network_manager.get(request)
-            reply.finished.connect(lambda reply=reply, item=item: self._handle_remove_response(reply, self.blocklist_view, item))
+            if self.api.remove_from_blocklist(domain):
+                row = self.blocklist_view.row(item)
+                self.blocklist_view.takeItem(row)
     
     def remove_from_allowlist(self):
         selected_items = self.allowlist_view.selectedItems()
@@ -651,42 +665,36 @@ class MainWindow(QMainWindow):
             
         for item in selected_items:
             domain = item.text()
-            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&sub={domain}")
-            request = QNetworkRequest(url)
-            reply = self.network_manager.get(request)
-            reply.finished.connect(lambda reply=reply, item=item: self._handle_remove_response(reply, self.allowlist_view, item))
+            if self.api.remove_from_allowlist(domain):
+                row = self.allowlist_view.row(item)
+                self.allowlist_view.takeItem(row)
         
     def fetch_blocklist(self):
         self.blocklist_view.clear()
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black")
-        request = QNetworkRequest(url)
-        reply = self.network_manager.get(request)
-        reply.finished.connect(lambda: self._handle_list_response(reply, self.blocklist_view))
+        domains = self.api.get_blocklist()
+        self.blocklist_view.addItems(domains)
         
     def fetch_allowlist(self):
         self.allowlist_view.clear()
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white")
-        request = QNetworkRequest(url)
-        reply = self.network_manager.get(request)
-        reply.finished.connect(lambda: self._handle_list_response(reply, self.allowlist_view))
+        domains = self.api.get_allowlist()
+        self.allowlist_view.addItems(domains)
 
     def fetch_status(self):
         """Fetch the AdWard status"""
         if self.config.is_configured():
-            self.api.fetch_status(self.config.get_api_url())
+            self.api.fetch_status()
             
     def update_status_display(self, enabled: bool):
         """Update the UI based on AdWard status"""
         status_text = "Enabled" if enabled else "Disabled"
         self.status_label.setText(f"Status: {status_text}")
     
-    # Use theme-appropriate colors
         if self.dark_mode:
-            enabled_color = "#4bb543"  # Darker green for dark mode
-            disabled_color = "#ff3333"  # Darker red for dark mode
+            enabled_color = "#4bb543"  
+            disabled_color = "#ff3333" 
         else:
-            enabled_color = "#27ae60"  # Original green
-            disabled_color = "#e74c3c"  # Original red
+            enabled_color = "#27ae60"  
+            disabled_color = "#e74c3c" 
         
         self.status_label.setStyleSheet(
             f"color: {enabled_color if enabled else disabled_color}; font-weight: bold;"
@@ -696,9 +704,15 @@ class MainWindow(QMainWindow):
         
     def toggle_adward(self):
         """Toggle AdWard enabled/disabled status"""
-        current_status = self.status_label.text() == "Status: Enabled"
-    
-        self.api.toggle_status(not current_status, self.config.get_api_url())
+        enable_server = self.toggle_button.text() == "Enable"
+        
+        self.toggle_button.setEnabled(False)
+        self.toggle_button.setText("Processing...")
+        
+        # Make the API call with the appropriate action
+        self.api.toggle_status(enable_server)
+        
+        QTimer.singleShot(2000, lambda: self.toggle_button.setEnabled(True))
     
     def show_error(self, error_message):
         """Show error message from API"""
@@ -724,84 +738,3 @@ class MainWindow(QMainWindow):
             }
         """)
         error_dialog.exec()
-    
-    def _handle_add_response(self, reply, list_widget, domain):
-        """Handle response after adding domain to list"""
-        if reply.error() == QNetworkReply.NoError:
-            try:
-                response = str(reply.readAll(), 'utf-8')
-                data = json.loads(response)
-                if data.get("success"):
-                    self.blocklist_input.clear()
-                    item = QListWidgetItem(domain)
-                    list_widget.addItem(item)
-                    
-                    # Show success message
-                    success_dialog = QMessageBox(self)
-                    success_dialog.setWindowTitle("Success")
-                    success_dialog.setText(f"Domain '{domain}' added successfully.")
-                    success_dialog.setIcon(QMessageBox.Information)
-                    success_dialog.setStandardButtons(QMessageBox.Ok)
-                    success_dialog.setStyleSheet("""
-                        QMessageBox {
-                            background-color: white;
-                        }
-                        QPushButton {
-                            background-color: #2ecc71;
-                            color: white;
-                            border: none;
-                            border-radius: 4px;
-                            padding: 6px 12px;
-                            min-width: 80px;
-                        }
-                        QPushButton:hover {
-                            background-color: #27ae60;
-                        }
-                    """)
-                    success_dialog.exec()
-                else:
-                    QMessageBox.warning(self, "Warning", f"Failed to add domain: {data.get('message', 'Unknown error')}")
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                QMessageBox.warning(self, "Error", "Invalid response from server.")
-        else:
-            QMessageBox.critical(self, "Error", f"Network error: {reply.errorString()}")
-        reply.deleteLater()
-        
-    def _handle_remove_response(self, reply, list_widget, item):
-        """Handle response after removing domain from list"""
-        if reply.error() == QNetworkReply.NoError:
-            try:
-                response = str(reply.readAll(), 'utf-8')
-                data = json.loads(response)
-                if data.get("success"):
-                    row = list_widget.row(item)
-                    list_widget.takeItem(row)
-                else:
-                    QMessageBox.warning(self, "Warning", f"Failed to remove domain: {data.get('message', 'Unknown error')}")
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                QMessageBox.warning(self, "Error", "Invalid response from server.")
-        else:
-            QMessageBox.critical(self, "Error", f"Network error: {reply.errorString()}")
-        reply.deleteLater()
-        
-    def _handle_list_response(self, reply, list_widget):
-        """Handle response from fetching list"""
-        if reply.error() == QNetworkReply.NoError:
-            try:
-                response = str(reply.readAll(), 'utf-8')
-                data = json.loads(response)
-                
-                # Clear the list first
-                list_widget.clear()
-                
-                # Add domains to the list
-                if isinstance(data, list):
-                    list_widget.addItems(data)
-                elif isinstance(data, dict) and "data" in data:
-                    if isinstance(data["data"], list):
-                        list_widget.addItems(data["data"])
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                QMessageBox.warning(self, "Error", "Invalid response from server.")
-        else:
-            QMessageBox.critical(self, "Error", f"Failed to fetch list: {reply.errorString()}")
-        reply.deleteLater()
