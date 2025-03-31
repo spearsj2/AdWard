@@ -31,3 +31,42 @@ The goal is a one-click solution (like existing VPN technology), that will route
 - Sqlite3
 - ChatGPT
 - Scapy 
+
+## Collaborators
+- Jason Spears 
+- William Mayer
+- Venkateswaran Naresh
+- Iaan Wheeler
+
+## Setup and Upkeep
+
+start a virtual environment to manage the dependencies with 
+```
+python -m venv venv
+```
+The activate the environment based on your system
+Mac/Linux
+```
+source venv/bin/activate
+```
+Windows 
+```
+venv\Scripts\activate
+```
+Install the requirements.txt with the following command 
+```
+pip install -r requirements.txt
+```
+
+
+## building the app 
+ 
+Please note this is for the GUI in vscode/vscodium if other adapt instructions
+
+Install the neccesary extensions 
+- Python
+- Python debugger
+
+Go to sidebar and there should be the 'Run & Debug' section and click the start button. The dropdown should read "Adward Qt App, if not, select that and then run.
+
+his should result in a new window for the app if it does not work while in the 'main' branch, contact maintainer.

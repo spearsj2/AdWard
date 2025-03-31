@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "AdWard Qt App",
+          "type": "python",
+          "request": "launch",
+          "program": "GUI/main.py",
+          "console": "integratedTerminal",
+          "justMyCode": true
+      }
+  ]
+}
