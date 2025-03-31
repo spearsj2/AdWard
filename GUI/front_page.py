@@ -349,8 +349,8 @@ class MainWindow(QMainWindow):
         self.allowlist_button.setEnabled(is_configured)
         
         if is_configured:
-            # Setup API with stored credentials
-            self.api.set_credentials(self.config.get_api_url(), self.config.token)
+            # Setup API with stored URL
+            self.api.set_url(self.config.get_api_url())
             self.fetch_status()
         else:
             self.status_label.setText("Status: Not Configured")
@@ -614,7 +614,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Domain cannot be empty.")
             return
             
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&add={domain}&auth={self.config.token}")
+        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&add={domain}")
         request = QNetworkRequest(url)
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_add_response(reply, self.blocklist_view, domain))
@@ -625,7 +625,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Domain cannot be empty.")
             return
             
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&add={domain}&auth={self.config.token}")
+        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&add={domain}")
         request = QNetworkRequest(url)
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_add_response(reply, self.allowlist_view, domain))
@@ -638,7 +638,7 @@ class MainWindow(QMainWindow):
             
         for item in selected_items:
             domain = item.text()
-            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&sub={domain}&auth={self.config.token}")
+            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&sub={domain}")
             request = QNetworkRequest(url)
             reply = self.network_manager.get(request)
             reply.finished.connect(lambda reply=reply, item=item: self._handle_remove_response(reply, self.blocklist_view, item))
@@ -651,21 +651,21 @@ class MainWindow(QMainWindow):
             
         for item in selected_items:
             domain = item.text()
-            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&sub={domain}&auth={self.config.token}")
+            url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&sub={domain}")
             request = QNetworkRequest(url)
             reply = self.network_manager.get(request)
             reply.finished.connect(lambda reply=reply, item=item: self._handle_remove_response(reply, self.allowlist_view, item))
         
     def fetch_blocklist(self):
         self.blocklist_view.clear()
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black&auth={self.config.token}")
+        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=black")
         request = QNetworkRequest(url)
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_list_response(reply, self.blocklist_view))
         
     def fetch_allowlist(self):
         self.allowlist_view.clear()
-        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white&auth={self.config.token}")
+        url = QUrl(f"{self.config.get_api_url()}/admin/api.php?list=white")
         request = QNetworkRequest(url)
         reply = self.network_manager.get(request)
         reply.finished.connect(lambda: self._handle_list_response(reply, self.allowlist_view))
@@ -673,7 +673,7 @@ class MainWindow(QMainWindow):
     def fetch_status(self):
         """Fetch the AdWard status"""
         if self.config.is_configured():
-            self.api.fetch_status(self.config.get_api_url(), self.config.token)
+            self.api.fetch_status(self.config.get_api_url())
             
     def update_status_display(self, enabled: bool):
         """Update the UI based on AdWard status"""
@@ -698,7 +698,7 @@ class MainWindow(QMainWindow):
         """Toggle AdWard enabled/disabled status"""
         current_status = self.status_label.text() == "Status: Enabled"
     
-        self.api.toggle_status(not current_status, self.config.get_api_url(), self.config.token)
+        self.api.toggle_status(not current_status, self.config.get_api_url())
     
     def show_error(self, error_message):
         """Show error message from API"""

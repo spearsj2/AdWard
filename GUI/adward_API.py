@@ -12,31 +12,29 @@ class AdwardAPI(QObject):
         self.network_manager = QNetworkAccessManager(self)
         self.network_manager.finished.connect(self._handle_network_reply)
         self.api_url = ""
-        self.api_key = ""
         
-    def set_credentials(self, api_url: str, api_key: str) -> None:
-        """Store API credentials for reuse"""
+    def set_url(self, api_url: str) -> None:
+        """Store API URL for reuse"""
         self.api_url = api_url
-        self.api_key = api_key
         
-    def fetch_status(self, api_url: str = None, api_key: str = None) -> None:
+    def fetch_status(self, api_url: str = None) -> None:
         """Fetch the current status from the API"""
-        url = QUrl(f"{api_url or self.api_url}/admin/api.php?status&auth={api_key or self.api_key}")
+        url = QUrl(f"{api_url or self.api_url}/admin/api.php?status")
         request = QNetworkRequest(url)
         request.setAttribute(QNetworkRequest.User, "status")
         self.network_manager.get(request)
         
     def fetch_summary(self) -> None:
         """Fetch summary data from the API"""
-        url = QUrl(f"{self.api_url}/admin/api.php?summaryRaw&auth={self.api_key}")
+        url = QUrl(f"{self.api_url}/admin/api.php?summaryRaw")
         request = QNetworkRequest(url)
         request.setAttribute(QNetworkRequest.User, "summary")
         self.network_manager.get(request)
     
-    def toggle_status(self, enable: bool, api_url: str = None, api_key: str = None) -> None:
+    def toggle_status(self, enable: bool, api_url: str = None) -> None:
         """Toggle the service status (enable/disable)"""
         action = "enable" if enable else "disable"
-        url = QUrl(f"{api_url or self.api_url}/admin/api.php?{action}&auth={api_key or self.api_key}")
+        url = QUrl(f"{api_url or self.api_url}/admin/api.php?{action}")
         request = QNetworkRequest(url)
         request.setAttribute(QNetworkRequest.User, "toggle")
         self.network_manager.get(request)
